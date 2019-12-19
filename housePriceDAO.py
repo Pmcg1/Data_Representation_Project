@@ -21,33 +21,21 @@ class HousePriceDAO:
 
     def getAllHouses(self):
         cursor = self.db.cursor()
-        sql="select * from houses"
+        sql="select h.id, h.descr, h.beds, h.baths, a.name, h.price from houses h left join areas a on h.area = a.id"
         cursor.execute(sql)
         results = cursor.fetchall()
         returnArray = []
-        print(results)
+
         for result in results:
             print(result)
-            returnArray.append(self.convertToDictionaryHouses(result))
+            returnArray.append(self.convertToDictionary(result))
 
         return returnArray
 
-    def getAllAreas(self):
-        cursor = self.db.cursor()
-        sql="select * from areas"
-        cursor.execute(sql)
-        results = cursor.fetchall()
-        returnArray = []
-        print(results)
-        for result in results:
-            print(result)
-            returnArray.append(self.convertToDictionaryAreas(result))
-
-        return returnArray
 
     def findByID(self, id):
         cursor = self.db.cursor()
-        sql="select * from houses where id = %s"
+        sql="select h.id, h.descr, h.beds, h.baths, a.name, h.price from houses h left join areas a on h.area = a.id where h.id = %s"
         values = (id,)
 
         cursor.execute(sql, values)
@@ -56,9 +44,10 @@ class HousePriceDAO:
 
     def update(self, values):
         cursor = self.db.cursor()
-        sql="update houses set descr= %s, beds=%s, baths=%s, area=%s, price=%s, where id = %s"
+        sql="update houses set descr= %s, beds=%s, baths=%s, area=%s, price=%s where id = %s"
         cursor.execute(sql, values)
         self.db.commit()
+
     def delete(self, id):
         cursor = self.db.cursor()
         sql="delete from houses where id = %s"
@@ -69,7 +58,7 @@ class HousePriceDAO:
         self.db.commit()
         print("delete done")
 
-    def convertToDictionaryHouses(self, result):
+    def convertToDictionary(self, result):
         colnames=['id','descr','beds', 'baths', 'area', 'price']
         item = {}
         
@@ -80,15 +69,6 @@ class HousePriceDAO:
         
         return item
 
-    def convertToDictionaryAreas(self, result):
-        colnames=['id','name']
-        item = {}
-        
-        if result:
-            for i, colName in enumerate(colnames):
-                value = result[i]
-                item[colName] = value
-        
-        return item
+
         
 housePriceDAO = HousePriceDAO()

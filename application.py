@@ -1,105 +1,91 @@
-from flask import Flask, jsonify
-#from flask_cors import CORS
+from flask import Flask, jsonify, request, abort
+from flask_cors import CORS
 from housePriceDAO import housePriceDAO
 
 app = Flask(__name__, static_url_path='', static_folder='.')
-#CORS(app)
+CORS(app)
 
 
 @app.route('/')
 def index():
     return "Hello, world!"
 
+# curl "http://127.0.0.1:5000/houses"
 @app.route('/houses')
 def getAllHouses():
     houses = housePriceDAO.getAllHouses()
     return jsonify(houses)
 
-@app.route('/areas')
-def getAllAreas():
-    areas = housePriceDAO.getAllAreas()
-    return jsonify(areas)
-
-
-'''
-books=[
-    { "id":1, "Title":"Harry Potter", "Author":"JK", "Price":1000},
-    { "id":2, "Title":"The Quiet American", "Author":"Greene", "Price":800},
-    { "id":3, "Title":"Something Steamy", "Author":" Jackie Collins", "Price":1100}
-]
-nextId=4
-#app = Flask(__name__)
-
-#@app.route('/')
-#def index():
-#    return "Hello, World!"
-
-#curl "http://127.0.0.1:5000/books"
-@app.route('/books')
-def getAll():
-    return jsonify(books)
-
-#curl "http://127.0.0.1:5000/books/2"
-@app.route('/books/<int:id>')
-def findById(id):
-    foundBooks = list(filter(lambda t: t['id'] == id, books))
-    if len(foundBooks) == 0:
+# curl "http://127.0.0.1:5000/houses/1"
+@app.route('/houses/<int:id>')
+def findByID(id):
+    foundHouse = housePriceDAO.findByID(id)
+    if len(foundHouse) == 0:
         return jsonify ({}) , 204
+    return jsonify(foundHouse)
 
-    return jsonify(foundBooks[0])
-
-#curl  -i -H "Content-Type:application/json" -X POST -d "{\"Title\":\"hello\",\"Author\":\"someone\",\"Price\":123}" http://127.0.0.1:5000/books
-@app.route('/books', methods=['POST'])
+# curl -i -H "Content-Type:application/json" -X POST -d "{\"descr\":\"test_create\",\"beds\":10,\"baths\":4.5,\"area\":3,\"price\":5000}" http://127.0.0.1:5000/houses
+@app.route('/houses', methods=['POST'])
 def create():
-    global nextId
     if not request.json:
         abort(400)
     # other checking 
-    book = {
-        "id": nextId,
-        "Title": request.json['Title'],
-        "Author": request.json['Author'],
-        "Price": request.json['Price'],
+    house = {
+        "descr": request.json['descr'],
+        "beds": request.json['beds'],
+        "baths": request.json['baths'],
+        "area": request.json['area'],
+        "price": request.json['price']
     }
-    nextId += 1
-    books.append(book)
-    return jsonify(book)
 
-#curl  -i -H "Content-Type:application/json" -X PUT -d "{\"Title\":\"hello\",\"Author\":\"someone\",\"Price\":123}" http://127.0.0.1:5000/books/1
-@app.route('/books/<int:id>', methods=['PUT'])
+    values = (house['descr'], house['beds'], house['baths'], house['area'], house['price'])
+    newId = housePriceDAO.create(values)
+    house['id'] = newId
+
+    return jsonify(house)
+
+
+# curl -i -H "Content-Type:application/json" -X PUT -d "{\"descr\":\"test_update\",\"beds\":100,\"baths\":9.5,\"area\":2,\"price\":1000}" http://127.0.0.1:5000/houses/8
+@app.route('/houses/<int:id>', methods=['PUT'])
 def update(id):
-    foundBooks = list(filter(lambda t: t['id']== id, books))
-    if (len(foundBooks) == 0):
+    foundHouse = housePriceDAO.findByID(id)
+
+    if not foundHouse:
         abort(404)
-    foundBook = foundBooks[0]
     if not request.json:
         abort(400)
+
     reqJson = request.json
-    if 'Price' in reqJson and type(reqJson['Price']) is not int:
+
+    if 'beds' in reqJson and type(reqJson['beds']) is not int:
         abort(400)
 
-    if 'Title' in reqJson:
-        foundBook['Title'] = reqJson['Title']
-    if 'Author' in reqJson:
-        foundBook['Author'] = reqJson['Author']
-    if 'Price' in reqJson:
-        foundBook['Price'] = reqJson['Price']
-    
-    return jsonify(foundBook)
-        
+    if 'price' in reqJson and type(reqJson['price']) is not int:
+        abort(400)
 
-    return "in update for id "+str(id)
+    if 'descr' in reqJson:
+        foundHouse['descr'] = reqJson['descr']
+    if 'beds' in reqJson:
+        foundHouse['beds'] = reqJson['beds']
+    if 'baths' in reqJson:
+        foundHouse['baths'] = reqJson['baths']
+    if 'area' in reqJson:
+        foundHouse['area'] = reqJson['area'] 
+    if 'price' in reqJson:
+        foundHouse['price'] = reqJson['price']   
 
-@app.route('/books/<int:id>' , methods=['DELETE'])
+    values = (foundHouse['descr'], foundHouse['beds'], foundHouse['baths'], foundHouse['area'], foundHouse['price'], foundHouse['id'])
+
+    housePriceDAO.update(values)
+
+    return jsonify(foundHouse)
+
+# curl -X DELETE "http://127.0.0.1:5000/houses/8"
+@app.route('/houses/<int:id>' , methods=['DELETE'])
 def delete(id):
-    foundBooks = list(filter(lambda t: t['id']== id, books))
-    if (len(foundBooks) == 0):
-        abort(404)
-    books.remove(foundBooks[0])
+    housePriceDAO.delete(id)
     return jsonify({"done":True})
 
 
-
-'''
 if __name__ == '__main__' :
     app.run(debug= True)
