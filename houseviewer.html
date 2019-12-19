@@ -39,7 +39,7 @@
 		</div>	
 	</body>
 	<script>
-	host= window.location.origin
+
 	function showCreate(){
 		document.getElementById('showCreateButton').style.display="none"
 		document.getElementById('houseTable').style.display="none"
@@ -188,6 +188,7 @@
 	}
 
 	function getAllAjax(){
+		host = window.location.origin
 		$.ajax({
 			"url": host+"/houses",
 			"method": "GET",
@@ -205,6 +206,7 @@
 	}
 
     function createHouseAjax(house){
+		host = window.location.origin
         console.log(JSON.stringify(house));
         $.ajax({
             "url": host+"/houses/1",
@@ -224,6 +226,7 @@
         });
     }
     function updateHouseAjax(house){
+		host = window.location.origin
         console.log(JSON.stringify(house));
         $.ajax({
             "url": host+"/houses"+encodeURI(house.id),
@@ -239,6 +242,7 @@
         });
     }
     function deleteHouseAjax(id){
+		host = window.location.origin
         $.ajax({
             "url": host+"/houses"+encodeURI(id),
             "method":"DELETE",
