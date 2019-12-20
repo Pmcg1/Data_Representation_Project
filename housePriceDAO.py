@@ -10,7 +10,7 @@ class HousePriceDAO:
             password=   cfg.mysql["password"],
             database=   cfg.mysql["database"],
             pool_name="my_connection_pool",
-            pool_size=5
+            pool_size=20
         )
         return db
 
@@ -30,8 +30,7 @@ class HousePriceDAO:
         cursor = db.cursor()
         sql="insert into houses (descr, beds, baths, area, price) values (%s, %s, %s, %s, %s)"
         cursor.execute(sql, values)
-
-        self.db.commit()
+        db.commit()
         lastRowId = cursor.lastrowid
         db.close()
         return lastRowId
@@ -69,7 +68,7 @@ class HousePriceDAO:
         cursor = db.cursor()
         sql="update houses set descr= %s, beds=%s, baths=%s, area=%s, price=%s where id = %s"
         cursor.execute(sql, values)
-        self.db.commit()
+        db.commit()
         db.close()
 
     def delete(self, id):
@@ -79,9 +78,9 @@ class HousePriceDAO:
         values = (id,)
 
         cursor.execute(sql, values)
+        print(self)
 
-        self.db.commit()
-        print("delete done")
+        db.commit()
         db.close()
 
     def convertToDictionary(self, result):

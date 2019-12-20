@@ -99,7 +99,10 @@ def create():
     }
 
     values = (house['descr'], house['beds'], house['baths'], house['area'], house['price'])
+    for value in values:
+        print("Value: ",value)
     newId = housePriceDAO.create(values)
+    print("NewId: ", newId)
     house['id'] = newId
 
     return jsonify(house)

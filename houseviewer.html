@@ -6,19 +6,19 @@
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	</head>
 	<body>
-		<h1>Houses</h1>
+		<h1>Galway Houses for Sale</h1>
 		<div>
 			<button id="showCreateButton" onclick="showCreate()">Create</button>
 		</div>
 		<div>
 			<table class="table" id="houseTable">
 				<tr>
-					<th>id</th>
-					<th>descr</th>
-					<th>beds</th>
-					<th>baths</th>
-					<th>area</th>
-					<th>price</th>
+					<th>ID</th>
+					<th>Description</th>
+					<th>Bedrooms</th>
+					<th>Bathrooms</th>
+					<th>Area</th>
+					<th>Price</th>
 					<th>Update</th>
 					<th>Delete</th>
 				</tr>
@@ -31,9 +31,13 @@
 			Description <input type="text" name="descr"><br/>
 			Bedrooms<input type="number" name="beds"><br/>
 			Bathrooms <input type="number" name="baths" step="0.5"><br/>
-			Area <input type="number" name="area"><br/>
+			<!-- Area <input type="number" name="area"><br/>-->
+			Area <select name="area" id="area"><br/>
+					<option value="1">City Centre</option>
+					<option value="2">Salthill</option>
+					<option value="3">Renmore</option>
+			</select><br/>
 			Price<input type="number" name="price" step="1000"><br/>
-
 			<span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
 			<span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
 		</div>	
@@ -56,6 +60,7 @@
 		document.getElementById('showCreateButton').style.display="block"
 		document.getElementById('houseTable').style.display="block"
 		document.getElementById('createUpdateForm').style.display="none"
+
 	}
 
 	function showUpdate(buttonElement){
@@ -81,12 +86,16 @@
 		var house = {}
 		house.id = form.querySelector('input[name="id"]').value
 		house.descr = form.querySelector('input[name="descr"]').value
-		house.beds = form.querySelector('input[name="beds"]').value
-		house.baths = form.querySelector('input[name="baths"]').value
-		house.area = form.querySelector('input[name="area"]').value
-		house.price = form.querySelector('input[name="price"]').value
+		house.beds = parseInt(form.querySelector('input[name="beds"]').value,10)
+		house.baths = parseInt(form.querySelector('input[name="baths"]').value,10)
+		house.area = parseInt(form.querySelector('select[name="area"]').value,10)
+		house.price = parseInt(form.querySelector('input[name="price"]').value,10)
 		console.log(JSON.stringify(house))
 		createHouseAjax(house)
+
+		clearForm();
+		showViewAll();
+		//getAllAjax();
 
 	}
 
@@ -99,6 +108,8 @@
 
 		clearForm();
 		showViewAll();
+		//getAllAjax();
+
 	}
 
 	function doDelete(r){
@@ -130,13 +141,14 @@
 		var cell8 = rowElement.insertCell(7);
 		cell8.innerHTML = '<button onclick="doDelete(this)">Delete</button>'
 	}
+
 	function clearForm(){
 		var form = document.getElementById('createUpdateForm')
 
 		form.querySelector('input[name="descr"]').value =''
 		form.querySelector('input[name="beds"]').value =''
 		form.querySelector('input[name="baths"]').value =''
-		form.querySelector('input[name="area"]').value =''
+		form.querySelector('select[name="area"]').value =''
 		form.querySelector('input[name="price"]').value =''
 	}
 
@@ -169,7 +181,7 @@
 		form.querySelector('input[name="descr"]').value = house.descr
 		form.querySelector('input[name="beds"]').value = house.beds
 		form.querySelector('input[name="baths"]').value = house.baths
-		form.querySelector('input[name="area"]').value = house.area
+		form.querySelector('select[name="area"]').value = house.area
 		form.querySelector('input[name="price"]').value = house.price
 		return house
 	}
@@ -181,7 +193,7 @@
 		house.descr = form.querySelector('input[name="descr"]').value
 		house.beds = parseInt(form.querySelector('input[name="beds"]').value,10)
 		house.baths = parseFloat(form.querySelector('input[name="baths"]').value)
-		house.area = parseInt(form.querySelector('input[name="area"]').value,10)
+		house.area = parseInt(form.querySelector('select[name="area"]').value,10)
 		house.price = parseInt(form.querySelector('input[name="price"]').value,10)
 		console.log(JSON.stringify(house))
 		return house
@@ -209,7 +221,7 @@
 		host = window.location.origin
         console.log(JSON.stringify(house));
         $.ajax({
-            "url": host+"/houses/1",
+            "url": host+"/houses", //check that this is ok
             "method":"POST",
             "data":JSON.stringify(house),
             "dataType": "JSON",
@@ -217,8 +229,9 @@
             "success":function(result){
                 house.id = result.id
                 addHouseToTable(house)
-                clearForm()
-                showViewAll()
+                //clearForm()
+                //showViewAll()
+				//getAllAjax();
             },
             "error":function(xhr,status,error){
                 console.log("error: "+status+" msg:"+error);
@@ -229,12 +242,15 @@
 		host = window.location.origin
         console.log(JSON.stringify(house));
         $.ajax({
-            "url": host+"/houses"+encodeURI(house.id),
+            "url": host+"/houses/"+encodeURI(house.id),
             "method":"PUT",
             "data":JSON.stringify(house),
             "dataType": "JSON",
             contentType: "application/json; charset=utf-8",
             "success":function(result){
+				//clearForm()
+                //showViewAll()
+				//getAllAjax();
             },
             "error":function(xhr,status,error){
                 console.log("error: "+status+" msg:"+error);
@@ -244,7 +260,7 @@
     function deleteHouseAjax(id){
 		host = window.location.origin
         $.ajax({
-            "url": host+"/houses"+encodeURI(id),
+            "url": host+"/houses/"+encodeURI(id),
             "method":"DELETE",
             "data":"",
             "dataType": "JSON",
