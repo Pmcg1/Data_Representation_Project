@@ -13,7 +13,8 @@ def home():
         return redirect(url_for('login'))
 
     return 'welcome ' + session['username'] +\
-        '<br><a href="'+url_for('logout')+'">logout</a>'
+        '<br><a href="'+url_for('logout')+'">logout</a><br>' +\
+        '<br><a href="houseviewer.html">View Database</a>'
 
 @app.route('/login')
 def login():
