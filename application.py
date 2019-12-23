@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, abort, session, url_for, redirect
 from flask_cors import CORS
 from housePriceDAO import housePriceDAO
 
+
 app = Flask(__name__, static_url_path='', static_folder='.')
 app.secret_key = 'myS3cr3tK3y'
 

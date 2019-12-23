@@ -7,7 +7,9 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        
+        <script src="./thunderforestAPIKey.js"></script>
 	
     </head>
     <style>
@@ -43,12 +45,14 @@
     corner2 = L.latLng(53.31734,-8.94165),
     mapBounds = L.latLngBounds(corner1, corner2);
 
-    // create a new tile layer
-    var tileUrl = 'https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}{r}.png?apikey=5efbe8d2c36f4cfc93882298a34ce314',
+
+    // create a new tile layer 
+    var tileUrl = 'https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}{r}.png?apikey='+tfAPIKey,
     layer = new L.TileLayer(tileUrl, {
         minZoom: 13,
         maxZoom: 18
     });
+
 
     // add the layer to the map
     mymap.addLayer(layer).setMaxBounds(mapBounds);
