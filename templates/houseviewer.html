@@ -9,6 +9,13 @@
 		<h1>Galway Houses for Sale</h1>
 		<div>
 			<button id="showCreateButton" onclick="showCreate()">Create</button>
+			<form method="post" action="/mapviewer" id="mapbutton">
+				<input type="submit" id="showMap"  method="post" value="Map">
+			</form>
+			<form method="post" action="/logout" id="logoutbutton">
+				<input type="submit" id="logout"  value="Logout">
+			</form>
+
 		</div>
 		<div>
 			<table class="table" id="houseTable">
@@ -28,16 +35,16 @@
 		<div id='createUpdateForm' style="display: none">
 			<h2><span id="createlabel">Create a</span> <span id="updatelabel">Update this</span> House</h2>
 			<input type="hidden" name="id"/>
-			Description <input type="text" name="descr"><br/>
+			Description <input type="text" name="descr" required><br/>
 			Bedrooms<input type="number" name="beds" min="0"><br/>
 			Bathrooms <input type="number" name="baths" step="0.5" min="0"><br/>
 			<!-- Area <input type="number" name="area"><br/>-->
-			Area <select name="area" id="area"><br/>
+			Area <select name="area" id="area" required><br/>
 					<option value="1">City Centre</option>
 					<option value="2">Salthill</option>
 					<option value="3">Renmore</option>
 			</select><br/>
-			Price<input type="number" name="price" step="1000" step="any" min="0"><br/>
+			Price<input type="number" name="price" step="1000" step="any" min="0" required><br/>
 			<span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
 			<span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
 		</div>	
@@ -95,20 +102,22 @@
 
 		clearForm();
 		showViewAll();
-		//getAllAjax();
+		clearTable();
+		getAllAjax();
 
 	}
-
-	//not working properly!		
+	
 	function doUpdate(){
 		var house = getHouseFromForm();
 		var rowElement = document.getElementById(house.id);
+		console.log("houseID:", rowElement)
 		updateHouseAjax(house);
 		setHouseInRow(rowElement, house);
 
 		clearForm();
 		showViewAll();
-		//getAllAjax();
+		clearTable();
+		getAllAjax();
 
 	}
 
@@ -135,9 +144,7 @@
 		var cell5 = rowElement.insertCell(4);
 		cell5.innerHTML = house.area
 		var cell6 = rowElement.insertCell(5);
-		console.log("HP:", house.price)
 		currentPrice= house.price
-		console.log("CP:", currentPrice)
 		// https://stackoverflow.com/a/14467460
 		cell6.innerHTML = "€"+currentPrice.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
 		var cell7 = rowElement.insertCell(6);
@@ -156,19 +163,28 @@
 		form.querySelector('input[name="price"]').value =''
 	}
 
+	function clearTable(){
+		var table = document.getElementById('houseTable');
+			while(table.rows.length > 1) {
+			table.deleteRow(1);
+			}
+	}
+
 	function getHouseFromRow(rowElement){
 		var house ={}
+
 		house.id = rowElement.getAttribute('id')
 		house.descr = rowElement.cells[1].firstChild.textContent
 		house.beds = parseInt(rowElement.cells[2].firstChild.textContent,10)
 		house.baths = parseFloat(rowElement.cells[3].firstChild.textContent)
 		house.area = parseInt(rowElement.cells[4].firstChild.textContent,10)
 		house.price = parseInt(rowElement.cells[5].firstChild.textContent,10)
+
 		return house
 	}
 
 	function setHouseInRow(rowElement, house){
-		//rowElement.cells[0].firstChild.textContent= house.id
+		rowElement.cells[0].firstChild.textContent= house.id
 		rowElement.cells[1].firstChild.textContent= house.descr
 		rowElement.cells[2].firstChild.textContent= house.beds
 		rowElement.cells[3].firstChild.textContent= house.baths
@@ -187,21 +203,58 @@
 		form.querySelector('input[name="baths"]').value = house.baths
 		form.querySelector('select[name="area"]').value = house.area
 		form.querySelector('input[name="price"]').value = house.price
+
 		return house
 	}
 
 	function getHouseFromForm(){
 		var form = document.getElementById('createUpdateForm')
 		var house = {}
+
 		house.id = form.querySelector('input[name="id"]').value
 		house.descr = form.querySelector('input[name="descr"]').value
 		house.beds = parseInt(form.querySelector('input[name="beds"]').value,10)
 		house.baths = parseFloat(form.querySelector('input[name="baths"]').value)
 		house.area = parseInt(form.querySelector('select[name="area"]').value,10)
 		house.price = parseInt(form.querySelector('input[name="price"]').value,10)
-		console.log(JSON.stringify(house))
+		
 		return house
 	}
+
+//	function showMap(){
+///		host = window.location.origin
+//		$.ajax({
+//			"url": host+"/mapviewer",
+//			"method": "GET",
+//			"data": "",
+//			"dataType": "JSON",
+//			"success":function(result){
+//				console.log("success")
+//				//if (response.redirect) {
+//				//	window.location.href = response.redirect;
+//				//}
+//			},
+//			"error":function(xhr,status,error){
+//				console.log("error: "+status+" msg:"+error)
+//			}
+//		});
+//	}
+
+//	function doLogout(){
+//		host = window.location.origin
+//		$.ajax({
+//			"url": host+"/logout",
+//			"method": "GET",
+//			"data": "",
+//			"dataType": "JSON",
+//			"success":function(result){
+
+//			},
+//			"error":function(xhr,status,error){
+//				console.log("error: "+status+" msg:"+error)
+//			}
+//		});
+//	}
 
 	function getAllAjax(){
 		host = window.location.origin

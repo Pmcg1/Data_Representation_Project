@@ -16,6 +16,16 @@
         #mapid { height: 380px; }
     </style>
     <body>
+        <h1>Galway Areas</h1>
+		<div>
+			<form method="post" action="/houseviewer" id="mapbutton">
+				<input type="submit" id="showHouses"  method="post" value="Houses">
+			</form>
+			<form method="post" action="/logout" id="logoutbutton">
+				<input type="submit" id="logout"  value="Logout">
+			</form>
+
+		</div>
         <div id="mapid"></div>
         <div>
 			<table class="table" id="areaTable">

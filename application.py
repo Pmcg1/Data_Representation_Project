@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, abort, session, url_for, redirect
+from flask import Flask, jsonify, request, abort, session, url_for, redirect, render_template
 from flask_cors import CORS
 from housePriceDAO import housePriceDAO
 
@@ -13,10 +13,12 @@ def home():
     if not 'username' in session:
         return redirect(url_for('login'))
 
-    return 'welcome ' + session['username'] +\
-        '<br><a href="'+url_for('logout')+'">logout</a><br>' +\
-        '<br><a href="houseviewer.html">View Database</a>' +\
-        '<br><a href="mapviewer.html">View Map</a>'
+    #return 'welcome ' + session['username'] +\
+    #    '<br><a href="'+url_for('logout')+'">logout</a><br>' +\
+    #    '<br><a href="houseviewer.html">View Database</a>' +\
+    #    '<br><a href="mapviewer.html">View Map</a>'
+
+    return redirect(url_for('houseViewer'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -31,32 +33,30 @@ def login():
 
         if not userCheck:
             print("NOT USERCHECK")
-            return redirect(url_for('login'))
+            #return redirect(url_for('login'))
+            return render_template('login.html')
 
         else:
             print("YES USERCHECK")
             session['username']=uname
             return redirect(url_for('home'))
             #return redirect(url_for('process_login', uname = uname))
+    return render_template('login.html')
 
 
-#    return '<h1>LOGIN</h1> '+\
-#
-#        '<button>' +\
-#            '<a href="'+url_for('process_login')+'">' +\
-#                'login' +\
-#            '</a>' +\
-#        '</button>'
+@app.route('/houseviewer', methods=['POST'])
+def houseViewer():
+    return render_template('houseviewer.html')
 
-#@app.route('/processLogin')
-#def process_login():
-#    session['username']="guest1"
-#    return redirect(url_for('home'))
+@app.route('/mapviewer', methods=['POST'])
+def mapViewer():
+    return render_template('mapviewer.html')
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 def logout():
     session.pop('username', None)
-    return redirect(url_for('home'))
+    #return redirect(url_for('home'))
+    return render_template('login.html')
 
 
 @app.route('/clear')
