@@ -14,53 +14,64 @@ def home():
 
     return 'welcome ' + session['username'] +\
         '<br><a href="'+url_for('logout')+'">logout</a><br>' +\
-        '<br><a href="houseviewer.html">View Database</a>'
+        '<br><a href="houseviewer.html">View Database</a>' +\
+        '<br><a href="mapviewer.html">View Map</a>'
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return '<h1> login</h1> '+\
-        '<button>' +\
-            '<a href="'+url_for('process_login')+'">' +\
-                'login' +\
-            '</a>' +\
-        '</button>'
+    if request.method == 'POST':
+        uname = request.form['uname']
+        print("USERNAME: ", uname)
 
-@app.route('/processLogin')
-def process_login():
-    session['username']="Guest User"
-    return redirect(url_for('home'))
+        upass = request.form['upass']
+        print("USERPASS: ", upass)
+        userCheck = housePriceDAO.checkLogin(uname, upass)
+        print("TEST:",userCheck)
+
+        if not userCheck:
+            print("NOT USERCHECK")
+            return redirect(url_for('login'))
+
+        else:
+            print("YES USERCHECK")
+            session['username']=uname
+            return redirect(url_for('home'))
+            #return redirect(url_for('process_login', uname = uname))
+
+
+#    return '<h1>LOGIN</h1> '+\
+#
+#        '<button>' +\
+#            '<a href="'+url_for('process_login')+'">' +\
+#                'login' +\
+#            '</a>' +\
+#        '</button>'
+
+#@app.route('/processLogin')
+#def process_login():
+#    session['username']="guest1"
+#    return redirect(url_for('home'))
 
 @app.route('/logout')
 def logout():
     session.pop('username', None)
     return redirect(url_for('home'))
 
-'''
-@app.route('/')
-def index():
-    count=0
-    count+=1
-
-    if not 'counter' in session:
-        session['counter'] = 0
-        print["new session"]
-
-    sessionCount=session['counter']
-    sessionCount+=1
-    session['counter']=sessionCount
-
-    pageContent = "<h1>counts</h1>" +\
-        "session Count ="+str(sessionCount) +\
-        "<br/>this Count ="+str(count)
-
-    return pageContent
-'''
 
 @app.route('/clear')
 def clear():
     session.pop('counter', None)
 
     return "done"
+
+# curl "http://127.0.0.1:5000/areas"
+@app.route('/areas')
+def getAllAreas():
+    if not 'username' in session:
+        abort(401)
+        return redirect(url_for('login'))
+    areas = housePriceDAO.getAllAreas()
+    return jsonify(areas)
 
 # curl "http://127.0.0.1:5000/houses"
 @app.route('/houses')

@@ -29,15 +29,15 @@
 			<h2><span id="createlabel">Create a</span> <span id="updatelabel">Update this</span> House</h2>
 			<input type="hidden" name="id"/>
 			Description <input type="text" name="descr"><br/>
-			Bedrooms<input type="number" name="beds"><br/>
-			Bathrooms <input type="number" name="baths" step="0.5"><br/>
+			Bedrooms<input type="number" name="beds" min="0"><br/>
+			Bathrooms <input type="number" name="baths" step="0.5" min="0"><br/>
 			<!-- Area <input type="number" name="area"><br/>-->
 			Area <select name="area" id="area"><br/>
 					<option value="1">City Centre</option>
 					<option value="2">Salthill</option>
 					<option value="3">Renmore</option>
 			</select><br/>
-			Price<input type="number" name="price" step="1000"><br/>
+			Price<input type="number" name="price" step="1000" step="any" min="0"><br/>
 			<span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
 			<span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
 		</div>	
@@ -135,7 +135,11 @@
 		var cell5 = rowElement.insertCell(4);
 		cell5.innerHTML = house.area
 		var cell6 = rowElement.insertCell(5);
-		cell6.innerHTML = house.price	
+		console.log("HP:", house.price)
+		currentPrice= house.price
+		console.log("CP:", currentPrice)
+		// https://stackoverflow.com/a/14467460
+		cell6.innerHTML = "€"+currentPrice.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
 		var cell7 = rowElement.insertCell(6);
 		cell7.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
 		var cell8 = rowElement.insertCell(7);

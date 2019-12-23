@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	
+    </head>
+    <style>
+        #mapid { height: 380px; }
+    </style>
+    <body>
+        <div id="mapid"></div>
+        <div>
+			<table class="table" id="areaTable">
+				<tr>
+					<th>ID</th>
+                    <th>Area Name</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Show on Map</th>
+				</tr>
+			
+			</table>
+		</div>
+
+    </body>  
+
+</html>
+<script>
+        // initialize the map on the "map" div with a given center and zoom
+    var mymap = new L.Map('mapid', {
+        center: new L.LatLng(53.2707, -9.0568),
+        zoom: 13,
+        bounds: mapBounds
+    });
+
+    var corner1 = L.latLng(53.25010,-9.14449),
+    corner2 = L.latLng(53.31734,-8.94165),
+    mapBounds = L.latLngBounds(corner1, corner2);
+
+    // create a new tile layer
+    var tileUrl = 'https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}{r}.png?apikey=5efbe8d2c36f4cfc93882298a34ce314',
+    layer = new L.TileLayer(tileUrl, {
+        minZoom: 13,
+        maxZoom: 18
+    });
+
+    // add the layer to the map
+    mymap.addLayer(layer).setMaxBounds(mapBounds);
+
+	function getAreaFromRow(rowElement){
+		var area ={}
+		area.id = rowElement.getAttribute('id')
+		area.dname = rowElement.cells[1].firstChild.textContent
+		area.latitude = parseFloat(rowElement.cells[2].firstChild.textContent)
+		area.longitude = parseFloat(rowElement.cells[3].firstChild.textContent)
+		return area
+	}
+
+
+    var markerGroup = L.layerGroup().addTo(mymap);
+	function showOnMap(buttonElement){
+        markerGroup.clearLayers()
+        var rowElement = buttonElement.parentNode.parentNode
+        var area = getAreaFromRow(rowElement) 
+        var marker = L.marker([area.latitude, area.longitude]).addTo(markerGroup);
+	}
+
+
+
+	function addAreaToTable(area){
+		var tableElement = document.getElementById('areaTable')
+		var rowElement = tableElement.insertRow(-1)
+		rowElement.setAttribute('id',area.id)
+		var cell1 = rowElement.insertCell(0);
+		cell1.innerHTML = area.id
+		var cell2 = rowElement.insertCell(1);
+        cell2.innerHTML = area.name
+		var cell3 = rowElement.insertCell(2);
+        cell3.innerHTML = area.latitude
+		var cell4 = rowElement.insertCell(3);
+        cell4.innerHTML = area.longitude
+        var cell5 = rowElement.insertCell(4);
+		cell5.innerHTML = '<button onclick="showOnMap(this)">Show on Map</button>'
+	}
+
+
+    function getAllAjax(){
+        host = window.location.origin
+        $.ajax({
+            "url": host+"/areas",
+            "method": "GET",
+            "data": "",
+            "dataType": "JSON",
+            "success":function(result){
+                for (area of result){
+                    addAreaToTable(area);
+                }
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error)
+            }
+        });
+    }
+        
+    getAllAjax();
+</script>

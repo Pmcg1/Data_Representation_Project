@@ -24,6 +24,26 @@ class HousePriceDAO:
         db = self.initConnectToDB()
         db.close()
 
+    def checkLogin(self, uname, upass):
+        db = self.getConnection()
+        cursor = db.cursor()
+        sql = "select * from users where uname = %s and upass=%s"
+        values = (uname, upass)
+        cursor.execute(sql, values)
+        result = cursor.fetchone()
+
+        if not result:
+            db.close()
+            print("No match found")
+            return "No match found!"
+
+        print("Match found")
+        colnames=['id', 'uname', 'upass', 'level']
+        retResult = self.convertToDictionary(result, colnames)
+
+        db.close()
+        print(retResult)
+        return retResult
 
     def create(self, values):
         db = self.getConnection()
@@ -42,13 +62,31 @@ class HousePriceDAO:
         cursor.execute(sql)
         results = cursor.fetchall()
         returnArray = []
+        colnames=['id','descr','beds', 'baths', 'area', 'price']
 
         for result in results:
             print(result)
-            returnArray.append(self.convertToDictionary(result))
+            returnArray.append(self.convertToDictionary(result, colnames))
 
         db.close()
         return returnArray
+
+    def getAllAreas(self):
+        db = self.getConnection()
+        cursor = db.cursor()
+        sql="select id, name, latitude, longitude from areas"
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        returnArray = []
+        colnames=['id','name','latitude', 'longitude']
+
+        for result in results:
+            print(result)
+            returnArray.append(self.convertToDictionary(result, colnames))
+
+        db.close()
+        return returnArray
+
 
 
     def findByID(self, id):
@@ -59,7 +97,8 @@ class HousePriceDAO:
 
         cursor.execute(sql, values)
         result = cursor.fetchone()
-        house = self.convertToDictionary(result)
+        colnames=['id','descr','beds', 'baths', 'area', 'price']
+        house = self.convertToDictionary(result, colnames)
         db.close()
         return house
 
@@ -83,8 +122,8 @@ class HousePriceDAO:
         db.commit()
         db.close()
 
-    def convertToDictionary(self, result):
-        colnames=['id','descr','beds', 'baths', 'area', 'price']
+    def convertToDictionary(self, result, colnames):
+        #colnames=['id','descr','beds', 'baths', 'area', 'price']
         item = {}
         
         if result:
@@ -93,6 +132,7 @@ class HousePriceDAO:
                 item[colName] = value
         
         return item
+   
 
 
         
