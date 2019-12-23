@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 19, 2019 at 01:25 AM
+-- Generation Time: Dec 23, 2019 at 12:58 PM
 -- Server version: 8.0.18
 -- PHP Version: 7.3.12
 
@@ -30,19 +30,21 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `areas`;
 CREATE TABLE IF NOT EXISTS `areas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(120) DEFAULT NULL,
+  `id` int(5) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `latitude` float DEFAULT NULL,
+  `longitude` float DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `areas`
 --
 
-INSERT INTO `areas` (`id`, `name`) VALUES
-(1, 'City Centre'),
-(2, 'Salthill'),
-(3, 'Renmore');
+INSERT INTO `areas` (`id`, `name`, `latitude`, `longitude`) VALUES
+(1, 'City Centre', 53.271, -9.06269),
+(2, 'Salthill', 53.2626, -9.0704),
+(3, 'Renmore', 53.2744, -9.0177);
 
 -- --------------------------------------------------------
 
@@ -54,13 +56,13 @@ DROP TABLE IF EXISTS `houses`;
 CREATE TABLE IF NOT EXISTS `houses` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `descr` varchar(250) DEFAULT NULL,
-  `beds` int(11) DEFAULT NULL,
+  `beds` int(5) DEFAULT NULL,
   `baths` float DEFAULT NULL,
-  `area` int(11) DEFAULT NULL,
+  `area` int(5) NOT NULL,
   `price` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `area` (`area`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `houses`
@@ -74,9 +76,32 @@ INSERT INTO `houses` (`id`, `descr`, `beds`, `baths`, `area`, `price`) VALUES
 (5, 'Beach Adjacent', 3, 2, 2, 650000),
 (6, 'Ideal rental property', 4, 1.5, 3, 250000),
 (7, 'House of the future', 1, 2.5, 3, 499999),
-(15, 'ppppppp', 1, 1.5, 1, 6000),
-(13, 'My new house', 3, 1.5, 1, 10000),
-(14, 'new house 4', 6, 3.5, 3, 2000);
+(28, 'TESTING456', 2, 1, 0, 10000000);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uname` varchar(30) NOT NULL,
+  `upass` varchar(50) NOT NULL,
+  `level` varchar(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uname` (`uname`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `uname`, `upass`, `level`) VALUES
+(1, 'admin', 'correct-horse-battery-staple', 'ADMIN'),
+(2, 'andrewbeatty', 'datarep19', 'ADMIN'),
+(3, 'guest', 'guest', 'GUEST');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
