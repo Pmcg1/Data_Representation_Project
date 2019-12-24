@@ -1,0 +1,25 @@
+#mapid { 
+    width: 100%; 
+    padding-bottom: 40%;
+    }
+
+.hidden {
+    display: none;
+}
+
+.submitLink {
+    background-color: transparent;
+    border: none;
+    color: goldenrod;
+    cursor: pointer;
+}
+
+
+.submitLink:hover{
+    color: darkcyan;
+}
+
+.currentLink {
+    color: cornflowerblue;
+}
+

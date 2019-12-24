@@ -1,21 +1,95 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<title>Galway House Price Viewer</title>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	</head>
-	<body>
-		<h1>LOGINPAGE</h1>
-		<form action="/login" method="post", id="formlogin">
-			<label>Username</label>
-			<input type="text" name="uname" value="guest" placeholder="guest" required></br>
-			<label>Password</label>
-			<input type="password" name="upass" value="guest" placeholder="guest" required></br>				
-			<input type="submit" value="Login" name="submit">
-		</form>
-	</body>
-	<script>
+<head>
 
-	</script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Data Representation Project">
+	<meta name="author" content="Peter McGowan">
+
+	<title>Galway House Viewer</title>
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+	<link rel="stylesheet" href="./css/custom.css">
+
+    <script src="./JS/ajaxscripts.js" type="text/javascript"></script>
+    
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+	
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Galway House Viewer</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <form method="post" action="/houseviewer" id="housebutton">
+                            <input type="submit" id="showHouses" class="submitLink"  method="post" value="Houses">
+                        </form>
+                    </li>
+                    <li class="nav-item">       
+                        <form method="post" action="/mapviewer" id="mapbutton">
+                            <input type="submit" id="showMaps" class="submitLink"  method="post" value="Maps">
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <form method="post" action="/logout" id="logoutbutton">
+                            <input type="submit" id="logout" class="submitLink  currentLink" value="Logout">
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+	<div class="container">
+
+        <div class="row align-items-center my-5">
+            <div class="col-lg-5 my-5" id="mapid">
+				<h1>Login to the House Viewer Database</h1>
+				<form action="/login" method="post", id="formlogin">
+					<div class="form-group">
+						<label>Username</label>
+						<input type="text" name="uname" value="guest" placeholder="guest" required class="form-control"></br>
+					</div>
+					<div class="form-group">
+						<label>Password</label>
+						<input type="password" name="upass" value="guest" placeholder="guest" required class="form-control"></br>	
+					</div>	
+					<input type="submit" value="Login" name="submit" class="btn btn-primary">
+				</form>
+			</div>
+        </div>
+    
+    </div>
+
+
+
+	<footer class="py-5 bg-dark">
+        <div class="container">
+            <p class="m-0 text-center text-white">Copyright &copy; Peter McGowan 2019</p>
+        </div>
+	</footer>
+	
+</body>
+<script>
+
+</script>
 </html>

@@ -1,126 +1,173 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-        crossorigin=""/>
-        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<head>
 
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        
-        <script src="./thunderforestAPIKey.js"></script>
-	
-    </head>
-    <style>
-        #mapid { height: 380px; }
-    </style>
-    <body>
-        <h1>Galway Areas</h1>
-		<div>
-			<form method="post" action="/houseviewer" id="mapbutton">
-				<input type="submit" id="showHouses"  method="post" value="Houses">
-			</form>
-			<form method="post" action="/logout" id="logoutbutton">
-				<input type="submit" id="logout"  value="Logout">
-			</form>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Data Representation Project">
+    <meta name="author" content="Peter McGowan">
+    
+    <title>Galway House Viewer</title>
 
-		</div>
-        <div id="mapid"></div>
-        <div>
-			<table class="table" id="areaTable">
-				<tr>
-					<th>ID</th>
-                    <th>Area Name</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
-                    <th>Show on Map</th>
-				</tr>
-			
-			</table>
-		</div>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
 
-    </body>  
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="./css/custom.css">
+
+    <script src="./JS/thunderforestAPIKey.js" type="text/javascript"></script>
+
+    <script src="./JS/ajaxscripts.js" type="text/javascript"></script>
+    
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Galway House Viewer</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <form method="post" action="/houseviewer" id="housebutton">
+                            <input type="submit" id="showHouses" class="submitLink"  method="post" value="Houses">
+                        </form>
+                    </li>
+                    <li class="nav-item">       
+                        <form method="post" action="/mapviewer" id="mapbutton">
+                            <input type="submit" id="showMaps" class="submitLink currentLink"  method="post" value="Maps">
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <form method="post" action="/logout" id="logoutbutton">
+                            <input type="submit" id="logout" class="submitLink" value="Logout">
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+
+        <div class="row align-items-center my-5">
+            <div class="col-lg-5 my-5" id="mapid">
+            </div>
+            <div class="col-lg-5 my-5" style=" vertical-align: top;">
+                <h1 class="font-weight-light align-top">Galway Areas</h1>
+                <p>There are houses currently available in the following areas:</p>
+                <table class="table table-striped " id="areaTable">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th class="hidden ">ID</th>
+                            <th>Area Name</th>
+                            <th class="hidden">Latitude</th>
+                            <th class="hidden">Longitude</th>
+                            <th class="text-right">Show on Map</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
+    </div>
+
+
+    <footer class="py-5 bg-dark">
+        <div class="container">
+            <p class="m-0 text-center text-white">Copyright &copy; Peter McGowan 2019</p>
+        </div>
+    </footer>
+
+
+</body>  
 
 </html>
 <script>
-        // initialize the map on the "map" div with a given center and zoom
+
+    // Javascript to incorporate a Thunderforest Map (requiring Authentication with an API Key)
+    // https://www.thunderforest.com/maps/neighbourhood/
+
+    // initialize the map on the div with id=mapid
     var mymap = new L.Map('mapid', {
-        center: new L.LatLng(53.2707, -9.0568),
-        zoom: 13,
-        bounds: mapBounds
+        center: new L.LatLng(53.2707, -9.0568), // centre at Galway City's LatLong
+        zoom: 13, // Default zoom is to a level that shows Galway City's neighbourhoods
+        bounds: mapBounds // Map will snap back inside the boundaries
     });
 
+    // Choosing map boundaries (LL and TR corners)
     var corner1 = L.latLng(53.25010,-9.14449),
     corner2 = L.latLng(53.31734,-8.94165),
     mapBounds = L.latLngBounds(corner1, corner2);
 
-
-    // create a new tile layer 
+    // Creating a tile layer from the neighbourhood map tiles
     var tileUrl = 'https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}{r}.png?apikey='+tfAPIKey,
     layer = new L.TileLayer(tileUrl, {
-        minZoom: 13,
+        minZoom: 13, // Controlling min and max zoom available to users
         maxZoom: 18
     });
 
-
-    // add the layer to the map
+    // Adding layer to map with set boundaries
     mymap.addLayer(layer).setMaxBounds(mapBounds);
 
-	function getAreaFromRow(rowElement){
-		var area ={}
-		area.id = rowElement.getAttribute('id')
-		area.dname = rowElement.cells[1].firstChild.textContent
-		area.latitude = parseFloat(rowElement.cells[2].firstChild.textContent)
-		area.longitude = parseFloat(rowElement.cells[3].firstChild.textContent)
-		return area
-	}
 
+    // Function that extracts the Lat & Long from a table entry by id
+    function getAreaFromRow(rowElement){
+        var area ={}
+        area.id = rowElement.getAttribute('id')
+        area.dname = rowElement.cells[1].firstChild.textContent
+        area.latitude = parseFloat(rowElement.cells[2].firstChild.textContent)
+        area.longitude = parseFloat(rowElement.cells[3].firstChild.textContent)
+        return area
+    };
 
+    // Creating an (empty) layer group for the showOnMap() function to use
     var markerGroup = L.layerGroup().addTo(mymap);
-	function showOnMap(buttonElement){
-        markerGroup.clearLayers()
+
+    // Function to create a map marker for the selected row element using its Lat&Long
+    function showOnMap(buttonElement){
+        markerGroup.clearLayers() // Clear old marker if new marker is required
         var rowElement = buttonElement.parentNode.parentNode
         var area = getAreaFromRow(rowElement) 
         var marker = L.marker([area.latitude, area.longitude]).addTo(markerGroup);
-	}
+    }; 
 
 
-
+    // lCreating a table of areas from the database
+    // This table does not grant full CRUD access to the user
+    // It can only be read
 	function addAreaToTable(area){
 		var tableElement = document.getElementById('areaTable')
 		var rowElement = tableElement.insertRow(-1)
 		rowElement.setAttribute('id',area.id)
 		var cell1 = rowElement.insertCell(0);
-		cell1.innerHTML = area.id
+        cell1.innerHTML = area.id
+        cell1.classList.add("hidden")
 		var cell2 = rowElement.insertCell(1);
         cell2.innerHTML = area.name
 		var cell3 = rowElement.insertCell(2);
         cell3.innerHTML = area.latitude
+        cell3.classList.add("hidden")
 		var cell4 = rowElement.insertCell(3);
         cell4.innerHTML = area.longitude
+        cell4.classList.add("hidden")
         var cell5 = rowElement.insertCell(4);
-		cell5.innerHTML = '<button onclick="showOnMap(this)">Show on Map</button>'
-	}
+		cell5.innerHTML = '<button class="btn btn-info float-right" onclick="showOnMap(this)">Click Here</button>'
+	};
 
-
-    function getAllAjax(){
-        host = window.location.origin
-        $.ajax({
-            "url": host+"/areas",
-            "method": "GET",
-            "data": "",
-            "dataType": "JSON",
-            "success":function(result){
-                for (area of result){
-                    addAreaToTable(area);
-                }
-            },
-            "error":function(xhr,status,error){
-                console.log("error: "+status+" msg:"+error)
-            }
-        });
-    }
-        
-    getAllAjax();
+    // Fill the areas table using the required function
+    getAllAreasAjax();
 </script>

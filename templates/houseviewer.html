@@ -1,302 +1,327 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<title>View Houses</title>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	</head>
-	<body>
-		<h1>Galway Houses for Sale</h1>
-		<div>
-			<button id="showCreateButton" onclick="showCreate()">Create</button>
-			<form method="post" action="/mapviewer" id="mapbutton">
-				<input type="submit" id="showMap"  method="post" value="Map">
-			</form>
-			<form method="post" action="/logout" id="logoutbutton">
-				<input type="submit" id="logout"  value="Logout">
-			</form>
+<head>
 
-		</div>
-		<div>
-			<table class="table" id="houseTable">
-				<tr>
-					<th>ID</th>
-					<th>Description</th>
-					<th>Bedrooms</th>
-					<th>Bathrooms</th>
-					<th>Area</th>
-					<th>Price</th>
-					<th>Update</th>
-					<th>Delete</th>
-				</tr>
-			
-			</table>
-		</div>
-		<div id='createUpdateForm' style="display: none">
-			<h2><span id="createlabel">Create a</span> <span id="updatelabel">Update this</span> House</h2>
-			<input type="hidden" name="id"/>
-			Description <input type="text" name="descr" required><br/>
-			Bedrooms<input type="number" name="beds" min="0"><br/>
-			Bathrooms <input type="number" name="baths" step="0.5" min="0"><br/>
-			<!-- Area <input type="number" name="area"><br/>-->
-			Area <select name="area" id="area" required><br/>
-					<option value="1">City Centre</option>
-					<option value="2">Salthill</option>
-					<option value="3">Renmore</option>
-			</select><br/>
-			Price<input type="number" name="price" step="1000" step="any" min="0" required><br/>
-			<span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
-			<span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
-		</div>	
-	</body>
-	<script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Data Representation Project">
+	<meta name="author" content="Peter McGowan">
 
-	function showCreate(){
-		document.getElementById('showCreateButton').style.display="none"
-		document.getElementById('houseTable').style.display="none"
-		document.getElementById('createUpdateForm').style.display="block"
+	<title>Galway House Viewer</title>
 
-		document.getElementById('createlabel').style.display="inline"
-		document.getElementById('updatelabel').style.display="none"
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
 
-		document.getElementById('doCreateButton').style.display="block"
-		document.getElementById('doUpdateButton').style.display="none"
-	}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-	function showViewAll() {
-		document.getElementById('showCreateButton').style.display="block"
-		document.getElementById('houseTable').style.display="block"
-		document.getElementById('createUpdateForm').style.display="none"
-
-	}
-
-	function showUpdate(buttonElement){
-		document.getElementById('showCreateButton').style.display="none"
-		document.getElementById('houseTable').style.display="none"
-		document.getElementById('createUpdateForm').style.display="block"
-
-		document.getElementById('createlabel').style.display="none"
-		document.getElementById('updatelabel').style.display="inline"
-
-		document.getElementById('doCreateButton').style.display="none"
-		document.getElementById('doUpdateButton').style.display="block"
-
-		var rowElement = buttonElement.parentNode.parentNode
-
-		var house = getHouseFromRow(rowElement)
-		populateFormWithHouse(house)
-	}
-
-	function doCreate(){	
-		var form = document.getElementById('createUpdateForm')
-		
-		var house = {}
-		house.id = form.querySelector('input[name="id"]').value
-		house.descr = form.querySelector('input[name="descr"]').value
-		house.beds = parseInt(form.querySelector('input[name="beds"]').value,10)
-		house.baths = parseInt(form.querySelector('input[name="baths"]').value,10)
-		house.area = parseInt(form.querySelector('select[name="area"]').value,10)
-		house.price = parseInt(form.querySelector('input[name="price"]').value,10)
-		console.log(JSON.stringify(house))
-		createHouseAjax(house)
-
-		clearForm();
-		showViewAll();
-		clearTable();
-		getAllAjax();
-
-	}
+	<link rel="stylesheet" href="./css/custom.css">
 	
-	function doUpdate(){
-		var house = getHouseFromForm();
-		var rowElement = document.getElementById(house.id);
-		console.log("houseID:", rowElement)
-		updateHouseAjax(house);
-		setHouseInRow(rowElement, house);
+    <script src="./JS/ajaxscripts.js" type="text/javascript"></script>
+    
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
 
-		clearForm();
-		showViewAll();
-		clearTable();
-		getAllAjax();
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-	}
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-	function doDelete(r){
-		var tableElement = document.getElementById('houseTable');
-        var rowElement = r.parentNode.parentNode;
-        var index = rowElement.rowIndex;
-        deleteHouseAjax(rowElement.getAttribute("id"));
-		tableElement.deleteRow(index);
-	}
+</head>
 
-	function addHouseToTable(house){
-		var tableElement = document.getElementById('houseTable')
-		var rowElement = tableElement.insertRow(-1)
-		rowElement.setAttribute('id',house.id)
-		var cell1 = rowElement.insertCell(0);
-		cell1.innerHTML = house.id
-		var cell2 = rowElement.insertCell(1);
-		cell2.innerHTML = house.descr
-		var cell3 = rowElement.insertCell(2);
-		cell3.innerHTML = house.beds
-		var cell4 = rowElement.insertCell(3);
-		cell4.innerHTML = house.baths
-		var cell5 = rowElement.insertCell(4);
-		cell5.innerHTML = house.area
-		var cell6 = rowElement.insertCell(5);
-		currentPrice= house.price
-		// https://stackoverflow.com/a/14467460
-		cell6.innerHTML = "€"+currentPrice.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
-		var cell7 = rowElement.insertCell(6);
-		cell7.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
-		var cell8 = rowElement.insertCell(7);
-		cell8.innerHTML = '<button onclick="doDelete(this)">Delete</button>'
-	}
-
-	function clearForm(){
-		var form = document.getElementById('createUpdateForm')
-
-		form.querySelector('input[name="descr"]').value =''
-		form.querySelector('input[name="beds"]').value =''
-		form.querySelector('input[name="baths"]').value =''
-		form.querySelector('select[name="area"]').value =''
-		form.querySelector('input[name="price"]').value =''
-	}
-
-	function clearTable(){
-		// https://stackoverflow.com/a/52380649
-		$('#houseTable tbody').empty();
-		
-	}
-
-
-	function getHouseFromRow(rowElement){
-		var house ={}
-
-		house.id = rowElement.getAttribute('id')
-		house.descr = rowElement.cells[1].firstChild.textContent
-		house.beds = parseInt(rowElement.cells[2].firstChild.textContent,10)
-		house.baths = parseFloat(rowElement.cells[3].firstChild.textContent)
-		house.area = parseInt(rowElement.cells[4].firstChild.textContent,10)
-		house.price = parseInt(rowElement.cells[5].firstChild.textContent,10)
-
-		return house
-	}
-
-	function setHouseInRow(rowElement, house){
-		rowElement.cells[0].firstChild.textContent= house.id
-		rowElement.cells[1].firstChild.textContent= house.descr
-		rowElement.cells[2].firstChild.textContent= house.beds
-		rowElement.cells[3].firstChild.textContent= house.baths
-		rowElement.cells[4].firstChild.textContent= house.area
-		rowElement.cells[5].firstChild.textContent= house.price
-	}
-
-
-	function populateFormWithHouse(house){
-		var form = document.getElementById('createUpdateForm')
-		form.querySelector('input[name="id"]').disabled = true
-		
-		form.querySelector('input[name="id"]').value = house.id
-		form.querySelector('input[name="descr"]').value = house.descr
-		form.querySelector('input[name="beds"]').value = house.beds
-		form.querySelector('input[name="baths"]').value = house.baths
-		form.querySelector('select[name="area"]').value = house.area
-		form.querySelector('input[name="price"]').value = house.price
-
-		return house
-	}
-
-	function getHouseFromForm(){
-		var form = document.getElementById('createUpdateForm')
-		var house = {}
-
-		house.id = form.querySelector('input[name="id"]').value
-		house.descr = form.querySelector('input[name="descr"]').value
-		house.beds = parseInt(form.querySelector('input[name="beds"]').value,10)
-		house.baths = parseFloat(form.querySelector('input[name="baths"]').value)
-		house.area = parseInt(form.querySelector('select[name="area"]').value,10)
-		house.price = parseInt(form.querySelector('input[name="price"]').value,10)
-		
-		return house
-	}
-
-
-	function getAllAjax(){
-		host = window.location.origin
-		$.ajax({
-			"url": host+"/houses",
-			"method": "GET",
-			"data": "",
-			"dataType": "JSON",
-			"success":function(result){
-				for (house of result){
-					addHouseToTable(house);
-				}
-			},
-			"error":function(xhr,status,error){
-				console.log("error: "+status+" msg:"+error)
-			}
-		});
-	}
-
-    function createHouseAjax(house){
-		host = window.location.origin
-        console.log(JSON.stringify(house));
-        $.ajax({
-            "url": host+"/houses", //check that this is ok
-            "method":"POST",
-            "data":JSON.stringify(house),
-            "dataType": "JSON",
-            contentType: "application/json; charset=utf-8",
-            "success":function(result){
-                house.id = result.id
-                addHouseToTable(house)
-                //clearForm()
-                //showViewAll()
-				//getAllAjax();
-            },
-            "error":function(xhr,status,error){
-                console.log("error: "+status+" msg:"+error);
-            }
-        });
-    }
-    function updateHouseAjax(house){
-		host = window.location.origin
-        console.log(JSON.stringify(house));
-        $.ajax({
-            "url": host+"/houses/"+encodeURI(house.id),
-            "method":"PUT",
-            "data":JSON.stringify(house),
-            "dataType": "JSON",
-            contentType: "application/json; charset=utf-8",
-            "success":function(result){
-				//clearForm()
-                //showViewAll()
-				//getAllAjax();
-            },
-            "error":function(xhr,status,error){
-                console.log("error: "+status+" msg:"+error);
-            }
-        });
-    }
-    function deleteHouseAjax(id){
-		host = window.location.origin
-        $.ajax({
-            "url": host+"/houses/"+encodeURI(id),
-            "method":"DELETE",
-            "data":"",
-            "dataType": "JSON",
-            contentType: "application/json; charset=utf-8",
-            "success":function(result){   
-            },
-            "error":function(xhr,status,error){
-                console.log("error: "+status+" msg:"+error);
-            }
-        });
-	}
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Galway House Viewer</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <form method="post" action="/houseviewer" id="housebutton">
+                            <input type="submit" id="showHouses" class="submitLink  currentLink"  method="post" value="Houses">
+                        </form>
+                    </li>
+                    <li class="nav-item">       
+                        <form method="post" action="/mapviewer" id="mapbutton">
+                            <input type="submit" id="showMaps" class="submitLink"  method="post" value="Maps">
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <form method="post" action="/logout" id="logoutbutton">
+                            <input type="submit" id="logout" class="submitLink" value="Logout">
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+	</nav>
 	
-	getAllAjax();
+	<div class="container">
 
-	</script>
+        <div class="row align-items-center my-5 h-100 w-100" style=" vertical-align: top;">
+
+            <div class="col-lg-5 my-5 w-100">
+
+				<div>
+					<h1>Galway Houses Available</h1>
+					<p>View the available houses in the database, edit them, delete them or create new ones.</p>
+					<button class="btn btn-primary" id="showCreateButton" onclick="showCreate()">Create</button>
+				</div>
+				<div>
+					<table class="table" id="houseTable">
+						<tr>
+							<th class="hidden">ID</th>
+							<th>Description</th>
+							<th>Bedrooms</th>
+							<th>Bathrooms</th>
+							<th>Area</th>
+							<th>Price</th>
+							<th>Update</th>
+							<th>Delete</th>
+						</tr>
+					</table>
+				</div>
+				<div id='createUpdateForm' style="display: none">
+					<form>
+						<h2><span id="createlabel">Create a</span> <span id="updatelabel">Update this</span> House</h2>
+						<input type="hidden" name="id"/>
+						<div class="form-group">
+							<label for="descr">Description</label> 
+							<input class="form-control" id="descr" type="text" name="descr" required>
+						</div>
+						<div class="form-group">
+							<label for="beds">Bedrooms</label> 
+							<input class="form-control" id="beds" type="number" name="beds" min="0">
+						</div>
+						<div class="form-group">
+							<label for="baths">Bathrooms</label> 
+							<input class="form-control" id="baths" type="number" name="baths" step="0.5" min="0">
+						</div>
+						<div class="form-group">
+							<label for="areas">Areas</label> 
+							<select class="form-control" name="area" id="area" required>
+								<option value="1">City Centre</option>
+								<option value="2">Salthill</option>
+								<option value="3">Renmore</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="price">Price</label> 
+							<input class="form-control" id="price" type="number" name="price" step="1000" step="any" min="0" required>
+						</div>
+						<span><button id="doCreateButton" class="btn btn-primary" onclick="doCreate()">Create</button></span>
+						<span><button id="doUpdateButton" class="btn btn-primary" onclick="doUpdate()">Update</button></span>
+					</form>
+				</div>
+			</div>
+        </div>
+
+    </div>
+
+
+	<footer class="py-5 bg-dark">
+        <div class="container">
+            <p class="m-0 text-center text-white">Copyright &copy; Peter McGowan 2019</p>
+        </div>
+	</footer>
+	
+</body>
+<script>
+
+// Controlling display of elements
+// Show only the Create form
+function showCreate(){
+	document.getElementById('showCreateButton').style.display="none"
+	document.getElementById('houseTable').style.display="none"
+	document.getElementById('createUpdateForm').style.display="block"
+	// Controlling display of create or update labels and buttons
+	document.getElementById('createlabel').style.display="inline"
+	document.getElementById('updatelabel').style.display="none"
+	document.getElementById('doCreateButton').style.display="block"
+	document.getElementById('doUpdateButton').style.display="none"
+};
+
+// Show the house table
+function showViewAll() {
+	document.getElementById('showCreateButton').style.display="block"
+	document.getElementById('houseTable').style.display="block"
+	document.getElementById('createUpdateForm').style.display="none"
+
+};
+
+// Show only the Create form
+function showUpdate(buttonElement){
+	document.getElementById('showCreateButton').style.display="none"
+	document.getElementById('houseTable').style.display="none"
+	document.getElementById('createUpdateForm').style.display="block"
+	// Controlling display of create or update labels and buttons
+	document.getElementById('createlabel').style.display="none"
+	document.getElementById('updatelabel').style.display="inline"
+	document.getElementById('doCreateButton').style.display="none"
+	document.getElementById('doUpdateButton').style.display="block"
+	// Adding the updated item back to the table
+	var rowElement = buttonElement.parentNode.parentNode
+	var house = getHouseFromRow(rowElement);
+	populateFormWithHouse(house);
+};
+
+// Create a new house item
+function doCreate(){	
+	var form = document.getElementById('createUpdateForm')		
+	var house = {}
+	house.id = form.querySelector('input[name="id"]').value
+	house.descr = form.querySelector('input[name="descr"]').value
+	// parseInt & parseFloat applied to restrict input types
+	house.beds = parseInt(form.querySelector('input[name="beds"]').value,10)
+	house.baths = parseFloat(form.querySelector('input[name="baths"]').value)
+	house.area = parseInt(form.querySelector('select[name="area"]').value,10)
+	house.price = parseInt(form.querySelector('input[name="price"]').value,10)
+	console.log(JSON.stringify(house))
+	// Call the relevant ajax function for database operation
+	createHouseAjax(house);
+	addHouseToTable(house);
+	// Clear the form
+	clearForm();
+	// Show the houses table, cleared and updated from the database
+	clearTable();
+	getAllHousesAjax();
+	showViewAll();
+
+};
+
+// Update an existing house item	
+function doUpdate(){
+	var house = getHouseFromForm();
+	var rowElement = document.getElementById(house.id);
+	console.log("houseID:", rowElement)
+	// Call ajax function to update database
+	updateHouseAjax(house);
+	// Replace in original position
+	setHouseInRow(rowElement, house);
+	// Clear the form
+	clearForm();
+	// Show the houses table, cleared and updated from the database
+	clearTable();	
+	getAllHousesAjax();
+	showViewAll();
+
+};
+
+// Delete an existing house item	
+function doDelete(r){
+	var tableElement = document.getElementById('houseTable');
+	var rowElement = r.parentNode.parentNode;
+	var index = rowElement.rowIndex;
+	// Call ajax function to delete from database
+	deleteHouseAjax(rowElement.getAttribute("id"));
+	// Also delete the table row
+	tableElement.deleteRow(index);
+};
+
+// Add a house to the table (called by other functions)
+function addHouseToTable(house){
+	var tableElement = document.getElementById('houseTable')
+	console.log("TEST:",tableElement)
+	var rowElement = tableElement.insertRow(-1);
+	rowElement.setAttribute('id',house.id)
+	var cell1 = rowElement.insertCell(0);
+	cell1.innerHTML = house.id
+	cell1.classList.add("hidden")
+	var cell2 = rowElement.insertCell(1);
+	cell2.innerHTML = house.descr
+	var cell3 = rowElement.insertCell(2);
+	cell3.innerHTML = house.beds
+	var cell4 = rowElement.insertCell(3);
+	cell4.innerHTML = house.baths
+	var cell5 = rowElement.insertCell(4);
+	cell5.innerHTML = house.area
+	var cell6 = rowElement.insertCell(5);
+	currentPrice= house.price
+	// https://stackoverflow.com/a/14467460
+	// Regex to display as currency rather than integer
+	cell6.innerHTML = "€"+currentPrice.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
+	var cell7 = rowElement.insertCell(6);
+	cell7.innerHTML = '<button class="btn btn-warning" onclick="showUpdate(this)">Update</button>'
+	var cell8 = rowElement.insertCell(7);
+	cell8.innerHTML = '<button class="btn btn-danger" onclick="doDelete(this)">Delete</button>'
+};
+
+// Function to clear the update/ create form
+function clearForm(){
+	var form = document.getElementById('createUpdateForm')
+	// Set all values to empty
+	form.querySelector('input[name="descr"]').value =''
+	form.querySelector('input[name="beds"]').value =''
+	form.querySelector('input[name="baths"]').value =''
+	form.querySelector('select[name="area"]').value =''
+	form.querySelector('input[name="price"]').value =''
+};
+
+// jQuery function for clearing the table to allow for it to be refilled from the database
+function clearTable(){
+	// https://stackoverflow.com/a/52380649
+	// Select the table by its id and declare its body elements as empty
+
+	//$('#houseTable').find('tr:gt(0)').remove();
+	$('#houseTable').empty();	
+};
+
+// Selecting a particular house from the table
+function getHouseFromRow(rowElement){
+	// Initialise empty house array
+	var house ={}
+	house.id = rowElement.getAttribute('id')
+	house.descr = rowElement.cells[1].firstChild.textContent
+	// parseInt & parseFloat applied to cast types
+	house.beds = parseInt(rowElement.cells[2].firstChild.textContent,10)
+	house.baths = parseFloat(rowElement.cells[3].firstChild.textContent)
+	house.area = parseInt(rowElement.cells[4].firstChild.textContent,10)
+	house.price = parseInt(rowElement.cells[5].firstChild.textContent,10)
+	return house
+};
+
+// Placing a house into a row in the table
+function setHouseInRow(rowElement, house){
+	rowElement.cells[0].firstChild.textContent= house.id
+	rowElement.cells[1].firstChild.textContent= house.descr
+	rowElement.cells[2].firstChild.textContent= house.beds
+	rowElement.cells[3].firstChild.textContent= house.baths
+	rowElement.cells[4].firstChild.textContent= house.area
+	rowElement.cells[5].firstChild.textContent= house.price
+};
+
+// Fill the create/update form with values
+function populateFormWithHouse(house){
+	var form = document.getElementById('createUpdateForm')
+	// Don't allow control over id
+	form.querySelector('input[name="id"]').disabled = true		
+	form.querySelector('input[name="id"]').value = house.id
+	form.querySelector('input[name="descr"]').value = house.descr
+	form.querySelector('input[name="beds"]').value = house.beds
+	form.querySelector('input[name="baths"]').value = house.baths
+	form.querySelector('select[name="area"]').value = house.area
+	form.querySelector('input[name="price"]').value = house.price
+	return house
+};
+
+// Creating a house item from the create/ update form
+function getHouseFromForm(){
+	var form = document.getElementById('createUpdateForm')
+	// Initialise empty house array
+	var house = {}
+	house.id = form.querySelector('input[name="id"]').value
+	house.descr = form.querySelector('input[name="descr"]').value
+	// parseInt & parseFloat applied to cast types
+	house.beds = parseInt(form.querySelector('input[name="beds"]').value,10)
+	house.baths = parseFloat(form.querySelector('input[name="baths"]').value)
+	house.area = parseInt(form.querySelector('select[name="area"]').value,10)
+	house.price = parseInt(form.querySelector('input[name="price"]').value,10)
+	return house
+};
+
+// Fill the html table with houses using ajax function
+getAllHousesAjax();
+
+</script>
 </html>
