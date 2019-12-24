@@ -164,11 +164,11 @@
 	}
 
 	function clearTable(){
-		var table = document.getElementById('houseTable');
-			while(table.rows.length > 1) {
-			table.deleteRow(1);
-			}
+		// https://stackoverflow.com/a/52380649
+		$('#houseTable tbody').empty();
+		
 	}
+
 
 	function getHouseFromRow(rowElement){
 		var house ={}
@@ -221,40 +221,6 @@
 		return house
 	}
 
-//	function showMap(){
-///		host = window.location.origin
-//		$.ajax({
-//			"url": host+"/mapviewer",
-//			"method": "GET",
-//			"data": "",
-//			"dataType": "JSON",
-//			"success":function(result){
-//				console.log("success")
-//				//if (response.redirect) {
-//				//	window.location.href = response.redirect;
-//				//}
-//			},
-//			"error":function(xhr,status,error){
-//				console.log("error: "+status+" msg:"+error)
-//			}
-//		});
-//	}
-
-//	function doLogout(){
-//		host = window.location.origin
-//		$.ajax({
-//			"url": host+"/logout",
-//			"method": "GET",
-//			"data": "",
-//			"dataType": "JSON",
-//			"success":function(result){
-
-//			},
-//			"error":function(xhr,status,error){
-//				console.log("error: "+status+" msg:"+error)
-//			}
-//		});
-//	}
 
 	function getAllAjax(){
 		host = window.location.origin
