@@ -28,9 +28,9 @@ Login Details are as follows:
 
 ## mySQL Database
 The database is running on a mySQL server on PythonAnywhere. It consists of three tables:
-* Houses;
-* Areas;
-* Users;|
+* Houses
+* Areas
+* Users
 
 ### Houses
 The house table schema is as follows:
@@ -52,7 +52,7 @@ Area is stored as an integer - this field is linked to the areas table, a SQL jo
 The areas table schema is as follows:
 
 | Field     | Type         | Null | Key | Default | Extra |
-!-----------!--------------!:----:|:---:|:-------:|-------+
+|-----------|--------------|:----:|:---:|:-------:|-------|
 | id        | int(5)       | NO   | PRI | NULL    |       |
 | name      | varchar(150) | NO   |     | NULL    |       |
 | latitude  | float        | YES  |     | NULL    |       |
@@ -99,7 +99,7 @@ Three .html pages are included:
 * houseviewer.html
 * mapviewer.html
 
-The webpages are mainly styled using bootstrap, including the template located here: [https://startbootstrap.com/previews/small-business/], although this has been modified and extended. CSS and JavaScript files for this are included.
+The webpages are mainly styled using bootstrap, including the template located [here](https://startbootstrap.com/previews/small-business/), although this has been modified and extended. CSS and JavaScript files for this are included.
 
 Additionally, the following items are included:
 * custom.css: additional CSS added to modify the bootstrap template
