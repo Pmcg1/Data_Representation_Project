@@ -64,12 +64,6 @@ def logout():
     session.pop('counter', None)
     return render_template('login.html')
 
-# Clear the session counter
-#@app.route('/clear')
-#def clear():
-#    session.pop('counter', None)
-#    return "done"
-
 # Check if user is logged in, then return the db call as json
 # curl "http://127.0.0.1:5000/areas"
 @app.route('/areas')
